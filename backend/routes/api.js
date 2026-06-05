@@ -63,7 +63,35 @@ router.get('/skills', (req, res) => {
 });
 
 router.post('/contact', async (req, res) => {
-    const { name, email, message } = req.body;
+    let { name, email, message } = req.body || {};
+
+    // Fallback for Netlify serverless environment if express.json() misses the body
+    if (!name && req.apiGateway && req.apiGateway.event && req.apiGateway.event.body) {
+        try {
+            let bodyStr = req.apiGateway.event.body;
+            if (req.apiGateway.event.isBase64Encoded) {
+                bodyStr = Buffer.from(bodyStr, 'base64').toString('utf-8');
+            }
+            const parsed = JSON.parse(bodyStr);
+            name = parsed.name;
+            email = parsed.email;
+            message = parsed.message;
+        } catch(e) {
+            console.error('Manual API gateway parsing failed', e);
+        }
+    }
+
+    // Fallback if req.body is an unparsed string
+    if (!name && typeof req.body === 'string') {
+        try {
+            const parsed = JSON.parse(req.body);
+            name = parsed.name;
+            email = parsed.email;
+            message = parsed.message;
+        } catch(e) {
+            console.error('Manual string parsing failed', e);
+        }
+    }
 
     if (!name || !email || !message) {
         return res.status(400).json({ error: 'Please provide all required fields.' });
