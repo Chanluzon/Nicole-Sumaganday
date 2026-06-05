@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: christ-amron-portfolio
+    env: node
+    buildCommand: "cd frontend && npm install && npm run build && cd ../backend && npm install"
+    startCommand: "cd backend && node server.js"
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_PASS
+        sync: false
