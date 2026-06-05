@@ -14,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', apiRoutes);
+app.use('/.netlify/functions/api', apiRoutes);
 
 // Base route for a// Test API route
 app.get('/api', (req, res) => {
@@ -37,5 +38,3 @@ if (process.env.NODE_ENV !== 'production' && !process.env.NETLIFY) {
     console.log(`Server started on http://localhost:${PORT}`);
   });
 }
-
-// Trigger restart
